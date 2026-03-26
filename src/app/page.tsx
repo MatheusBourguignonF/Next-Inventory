@@ -1,6 +1,7 @@
 'use client'
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import Product from "@/components/modals/product";
 
 interface Rating {
   rate: number
@@ -14,14 +15,14 @@ interface Product{
   description: string
   category: string
   image: string
-  rating: Rating[]
+  rating: Rating
 
 }
 
 interface Empresa{
   name: string
   description: string
-  addres: string
+  address: string
   phone: string
   products: Product[]
 }
@@ -29,6 +30,8 @@ interface Empresa{
 export default function Home() {
 
   const [empresas, setProducts] = useState<Empresa[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedCompany, setSelectedCompany] = useState<Empresa | null>(null)
 
   useEffect(() => {
     const getData = async () => {
@@ -37,8 +40,6 @@ export default function Home() {
       console.log(json);
       setProducts(json);
     };
-
-    
     getData();
   }, []);
 
@@ -57,6 +58,7 @@ export default function Home() {
                 alt={product.title}
                 width={288}
                 height={160}
+                priority
               />
             </div>
 
@@ -66,16 +68,13 @@ export default function Home() {
             <p className="text-center mt-1">
               R$ {product.price.toFixed(2).replace('.',',')}</p>
 
-            <button className="font-bold bg-black text-white p-2 rounded-2xl mt-5 mb-2">
-              Detalhes
-            </button>
-
+            <button onClick={() => {setSelectedProduct(product); setSelectedCompany(empresa)}}  className="bg-black text-white font-bold p-2 rounded-2xl mb-1.5 mt-1.5">Details</button>
           </div>
-
           ))
         ))}
+        <Product empresa={selectedCompany} product={selectedProduct} open={!!selectedProduct} onOpenChange={(open) => { if (!open) setSelectedProduct(null); setSelectedCompany(null) }}></Product>
 
       </section>
     </main>
-  );
+  ); 
 }
